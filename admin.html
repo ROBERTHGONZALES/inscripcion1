@@ -1,0 +1,1031 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Administrador - Sistema de Inscripción</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.1/font/bootstrap-icons.min.css" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-red: #dc3545;
+            --secondary-red: #c82333;
+            --light-red: #f8d7da;
+            --dark-red: #721c24;
+            --accent-gray: #6c757d;
+            --light-gray: #f8f9fa;
+        }
+        
+        .navbar-custom {
+            background: linear-gradient(135deg, var(--primary-red), var(--secondary-red));
+        }
+        
+        .btn-red {
+            background-color: var(--primary-red);
+            border-color: var(--primary-red);
+            color: white;
+        }
+        
+        .btn-red:hover {
+            background-color: var(--secondary-red);
+            border-color: var(--secondary-red);
+            color: white;
+        }
+        
+        .card-stat {
+            border-left: 4px solid var(--primary-red);
+            transition: transform 0.2s;
+        }
+        
+        .card-stat:hover {
+            transform: translateY(-2px);
+        }
+        
+        .badge-pendiente {
+            background-color: #ffc107;
+        }
+        
+        .badge-aprobado {
+            background-color: #198754;
+        }
+        
+        .badge-rechazado {
+            background-color: var(--primary-red);
+        }
+        
+        .table-hover tbody tr:hover {
+            background-color: rgba(220, 53, 69, 0.05);
+        }
+        
+        .nav-pills .nav-link.active {
+            background-color: var(--primary-red);
+        }
+        
+        .nav-pills .nav-link {
+            color: var(--accent-gray);
+        }
+        
+        .nav-pills .nav-link:hover {
+            color: var(--primary-red);
+        }
+        
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--primary-red);
+        }
+        
+        .modal-header {
+            background: linear-gradient(135deg, var(--primary-red), var(--secondary-red));
+            color: white;
+        }
+        
+        .btn-outline-red {
+            color: var(--primary-red);
+            border-color: var(--primary-red);
+        }
+        
+        .btn-outline-red:hover {
+            background-color: var(--primary-red);
+            border-color: var(--primary-red);
+            color: white;
+        }
+    </style>
+</head>
+<body class="bg-light">
+    <!-- Header -->
+    <nav class="navbar navbar-custom text-white shadow-sm">
+        <div class="container-fluid">
+            <div class="d-flex flex-column align-items-center w-100">
+                <h1 class="navbar-brand mb-0 h1 text-white">
+                    <i class="bi bi-gear-fill me-2"></i>Panel de Administrador
+                </h1>
+                <p class="mb-0 text-white-50">Sistema de Gestión de Inscripciones Educativas</p>
+            </div>
+        </div>
+    </nav>
+    
+    <div class="container-fluid mt-4">
+        <!-- Navigation Pills -->
+        <div class="row">
+            <div class="col-12">
+                <ul class="nav nav-pills mb-4 justify-content-center">
+                    <li class="nav-item">
+                        <button class="nav-link active" id="btn-dashboard" onclick="mostrarPanel('dashboard')">
+                            <i class="bi bi-speedometer2 me-1"></i>Dashboard
+                        </button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link" id="btn-inscripciones" onclick="mostrarPanel('inscripciones')">
+                            <i class="bi bi-people-fill me-1"></i>Inscripciones
+                        </button>
+                    </li>
+                    <li class="nav-item">
+                        <a href="index.html" class="nav-link text-muted">
+                            <i class="bi bi-arrow-left me-1"></i>Volver al Formulario
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        
+        <!-- Panel Dashboard -->
+        <div id="panel-dashboard" class="panel active">
+            <div class="row mb-4">
+                <div class="col-12">
+                    <h2 class="text-dark mb-4">
+                        <i class="bi bi-graph-up text-danger me-2"></i>Dashboard
+                    </h2>
+                </div>
+            </div>
+            
+            <!-- Statistics Cards -->
+            <div class="row mb-4" id="stats-container">
+                <div class="col-md-4 mb-3">
+                    <div class="card card-stat shadow-sm">
+                        <div class="card-body text-center">
+                            <div class="stat-number" id="total-inscripciones">0</div>
+                            <h6 class="card-title text-muted mt-2">Total Inscripciones</h6>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <div class="card card-stat shadow-sm">
+                        <div class="card-body text-center">
+                            <div class="stat-number text-warning" id="inscripciones-pendientes">0</div>
+                            <h6 class="card-title text-muted mt-2">Pendientes</h6>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <div class="card card-stat shadow-sm">
+                        <div class="card-body text-center">
+                            <div class="stat-number text-success" id="inscripciones-aprobadas">0</div>
+                            <h6 class="card-title text-muted mt-2">Aprobadas</h6>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Filters and Reports -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-funnel text-danger me-2"></i>Filtros y Reportes
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3 align-items-end">
+                        <div class="col-md-2">
+                            <label for="dashboard-nivel" class="form-label">Nivel</label>
+                            <select class="form-select" id="dashboard-nivel" onchange="actualizarGradosDashboard()">
+                                <option value="">Todos los niveles</option>
+                                <option value="primario">Primario</option>
+                                <option value="secundario">Secundario</option>
+                            </select>
+                        </div>
+                        
+                        <div class="col-md-2">
+                            <label for="dashboard-estado" class="form-label">Estado</label>
+                            <select class="form-select" id="dashboard-estado">
+                                <option value="">Todos los estados</option>
+                                <option value="pendiente">Pendientes</option>
+                                <option value="aprobado">Aprobados</option>
+                            </select>
+                        </div>
+                        
+                        <div class="col-md-2">
+                            <label for="dashboard-grado" class="form-label">Grado</label>
+                            <select class="form-select" id="dashboard-grado">
+                                <option value="">Todos los grados</option>
+                            </select>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="btn-group w-100" role="group">
+                                <button type="button" class="btn btn-red" onclick="aplicarFiltrosDashboard()">
+                                    <i class="bi bi-search me-1"></i>Aplicar Filtros
+                                </button>
+                                <button type="button" class="btn btn-success" onclick="exportarExcel()">
+                                    <i class="bi bi-file-earmark-excel me-1"></i>Excel
+                                </button>
+                                <button type="button" class="btn btn-outline-red" onclick="exportarPDF()">
+                                    <i class="bi bi-file-earmark-pdf me-1"></i>PDF
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Filtered Results Table -->
+            <div class="card shadow-sm">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-table text-danger me-2"></i>Inscripciones Filtradas
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover" id="tabla-recientes">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>DNI</th>
+                                    <th>Nombre Completo</th>
+                                    <th>Institución</th>
+                                    <th>Nivel</th>
+                                    <th>Fecha</th>
+                                    <th>Estado</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Panel Inscripciones -->
+        <div id="panel-inscripciones" class="panel" style="display: none;">
+            <div class="row mb-4">
+                <div class="col-12">
+                    <h2 class="text-dark mb-4">
+                        <i class="bi bi-people-fill text-danger me-2"></i>Gestión de Inscripciones
+                    </h2>
+                </div>
+            </div>
+            
+            <!-- Search and Filters -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="bi bi-search"></i>
+                                </span>
+                                <input type="text" class="form-control" id="search-input" 
+                                       placeholder="Buscar por nombre, apellido o DNI...">
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-2">
+                            <select class="form-select" id="filtro-nivel" onchange="actualizarGradosFiltros()">
+                                <option value="">Todos los niveles</option>
+                                <option value="primario">Primario</option>
+                                <option value="secundario">Secundario</option>
+                            </select>
+                        </div>
+                        
+                        <div class="col-md-2">
+                            <select class="form-select" id="filtro-estado">
+                                <option value="">Todos los estados</option>
+                                <option value="pendiente">Pendientes</option>
+                                <option value="aprobado">Aprobados</option>
+                            </select>
+                        </div>
+                        
+                        <div class="col-md-2">
+                            <select class="form-select" id="filtro-grado">
+                                <option value="">Todos los grados</option>
+                            </select>
+                        </div>
+                        
+                        <div class="col-md-2">
+                            <div class="btn-group w-100">
+                                <button class="btn btn-red" onclick="buscarInscripciones()">
+                                    <i class="bi bi-search"></i>
+                                </button>
+                                <button class="btn btn-outline-secondary" onclick="limpiarFiltros()">
+                                    <i class="bi bi-x-circle"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Inscripciones Table -->
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover" id="tabla-inscripciones">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>ID</th>
+                                    <th>DNI</th>
+                                    <th>Apellidos</th>
+                                    <th>Nombres</th>
+                                    <th>Región</th>
+                                    <th>Institución</th>
+                                    <th>Nivel</th>
+                                    <th>Estado</th>
+                                    <th>Fecha</th>
+                                    <th width="200">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                    
+                    <!-- Pagination -->
+                    <nav aria-label="Paginación de inscripciones">
+                        <ul class="pagination justify-content-center" id="pagination-inscripciones">
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal para editar inscripción -->
+    <div class="modal fade" id="modal-editar" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="bi bi-pencil-square me-2"></i>Editar Inscripción
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" onclick="cerrarModal('modal-editar')"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="form-editar">
+                        <input type="hidden" id="edit-id">
+                        
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="edit-apellidos" class="form-label">Apellidos</label>
+                                <input type="text" class="form-control" id="edit-apellidos" required>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label for="edit-nombres" class="form-label">Nombres</label>
+                                <input type="text" class="form-control" id="edit-nombres" required>
+                            </div>
+                            
+                            <div class="col-md-4">
+                                <label for="edit-dni" class="form-label">DNI</label>
+                                <input type="text" class="form-control" id="edit-dni" maxlength="8" required>
+                            </div>
+                            
+                            <div class="col-md-4">
+                                <label for="edit-region" class="form-label">Región</label>
+                                <input type="text" class="form-control" id="edit-region" required>
+                            </div>
+                            
+                            <div class="col-md-4">
+                                <label for="edit-provincia" class="form-label">Provincia</label>
+                                <input type="text" class="form-control" id="edit-provincia" required>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label for="edit-distrito" class="form-label">Distrito</label>
+                                <input type="text" class="form-control" id="edit-distrito" required>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label for="edit-institucion" class="form-label">Institución Educativa</label>
+                                <input type="text" class="form-control" id="edit-institucion" required>
+                            </div>
+                            
+                            <div class="col-md-4">
+                                <label for="edit-nivel" class="form-label">Nivel</label>
+                                <select class="form-select" id="edit-nivel" required>
+                                    <option value="primario">Primario</option>
+                                    <option value="secundario">Secundario</option>
+                                </select>
+                            </div>
+                            
+                            <div class="col-md-4">
+                                <label for="edit-grado" class="form-label">Grado</label>
+                                <input type="text" class="form-control" id="edit-grado" required>
+                            </div>
+                            
+                            <div class="col-md-4">
+                                <label for="edit-estado" class="form-label">Estado</label>
+                                <select class="form-select" id="edit-estado" required>
+                                    <option value="pendiente">Pendiente</option>
+                                    <option value="aprobado">Aprobado</option>
+                                    <option value="rechazado">Rechazado</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-4">
+                            <button type="submit" class="btn btn-red w-100">
+                                <i class="bi bi-check-lg me-2"></i>Guardar Cambios
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal para visualizar PDF -->
+    <div class="modal fade" id="modal-pdf" tabindex="-1">
+        <div class="modal-dialog modal-fullscreen">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="pdf-titulo">
+                        <i class="bi bi-file-earmark-pdf me-2"></i>Voucher de Pago
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" onclick="cerrarModal('modal-pdf')"></button>
+                </div>
+                <div class="modal-body p-0">
+                    <iframe id="pdf-viewer" width="100%" height="100%" style="border: none; height: 85vh;"></iframe>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal para aprobar inscripción -->
+    <div class="modal fade" id="modal-aprobar" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="bi bi-check-circle me-2"></i>Aprobar Inscripción
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" onclick="cerrarModal('modal-aprobar')"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle me-2"></i>
+                        ¿Está seguro de que desea aprobar la inscripción de:
+                    </div>
+                    <p class="text-center fs-5 fw-bold text-dark" id="aprobar-nombre"></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="cerrarModal('modal-aprobar')">
+                        <i class="bi bi-x-circle me-1"></i>Cancelar
+                    </button>
+                    <button type="button" class="btn btn-success" onclick="confirmarAprobacion()">
+                        <i class="bi bi-check-circle me-1"></i>Aprobar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Toast for messages -->
+    <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+        <div id="toast-message" class="toast" role="alert">
+            <div class="toast-header">
+                <i class="bi bi-bell-fill text-danger me-2"></i>
+                <strong class="me-auto">Sistema</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
+            </div>
+            <div class="toast-body" id="toast-body">
+                <!-- Message content -->
+            </div>
+        </div>
+    </div>
+    
+    <!-- Bootstrap JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Variables globales
+        let paginaActual = 1;
+        let totalPaginas = 1;
+        let toastInstance;
+        
+        // Inicializar aplicación
+        window.onload = function() {
+            // Inicializar toast
+            toastInstance = new bootstrap.Toast(document.getElementById('toast-message'));
+            cargarDashboard();
+        }
+        
+        function mostrarPanel(panel) {
+            // Ocultar todos los paneles
+            document.querySelectorAll('.panel').forEach(p => p.style.display = 'none');
+            document.querySelectorAll('.nav-link').forEach(b => b.classList.remove('active'));
+            
+            // Mostrar panel seleccionado
+            document.getElementById('panel-' + panel).style.display = 'block';
+            document.getElementById('btn-' + panel).classList.add('active');
+            
+            // Cargar datos según el panel
+            switch(panel) {
+                case 'dashboard':
+                    cargarDashboard();
+                    break;
+                case 'inscripciones':
+                    cargarInscripciones(1);
+                    break;
+            }
+        }
+        
+        function cargarDashboard() {
+            aplicarFiltrosDashboard();
+        }
+        
+        function aplicarFiltrosDashboard() {
+            const nivel = document.getElementById('dashboard-nivel').value;
+            const estado = document.getElementById('dashboard-estado').value;
+            const grado = document.getElementById('dashboard-grado').value;
+            
+            let url = '/api/inscripciones?limit=50';
+            if (nivel) url += `&nivel=${encodeURIComponent(nivel)}`;
+            if (estado) url += `&estado=${encodeURIComponent(estado)}`;
+            if (grado) url += `&grado=${encodeURIComponent(grado)}`;
+            
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Actualizar estadísticas
+                        document.getElementById('total-inscripciones').textContent = data.pagination.total;
+                        
+                        // Contar por estado
+                        let pendientes = data.data.filter(i => i.estado === 'pendiente').length;
+                        let aprobadas = data.data.filter(i => i.estado === 'aprobado').length;
+                        
+                        document.getElementById('inscripciones-pendientes').textContent = pendientes;
+                        document.getElementById('inscripciones-aprobadas').textContent = aprobadas;
+                        
+                        // Mostrar inscripciones filtradas
+                        mostrarTablaRecientes(data.data);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    mostrarMensaje('Error cargando dashboard', 'danger');
+                });
+        }
+        
+        function exportarExcel() {
+            const nivel = document.getElementById('dashboard-nivel').value;
+            const estado = document.getElementById('dashboard-estado').value;
+            const grado = document.getElementById('dashboard-grado').value;
+            
+            let url = '/api/export-excel?';
+            if (nivel) url += `nivel=${encodeURIComponent(nivel)}&`;
+            if (estado) url += `estado=${encodeURIComponent(estado)}&`;
+            if (grado) url += `grado=${encodeURIComponent(grado)}&`;
+            
+            // Crear enlace de descarga
+            const link = document.createElement('a');
+            link.href = url;
+            link.style.display = 'none';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            mostrarMensaje('Descargando archivo Excel...', 'info');
+        }
+        
+        function exportarPDF() {
+            const nivel = document.getElementById('dashboard-nivel').value;
+            const estado = document.getElementById('dashboard-estado').value;
+            const grado = document.getElementById('dashboard-grado').value;
+            
+            let url = '/api/export-pdf?';
+            if (nivel) url += `nivel=${encodeURIComponent(nivel)}&`;
+            if (estado) url += `estado=${encodeURIComponent(estado)}&`;
+            if (grado) url += `grado=${encodeURIComponent(grado)}&`;
+            
+            // Crear enlace de descarga
+            const link = document.createElement('a');
+            link.href = url;
+            link.style.display = 'none';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            mostrarMensaje('Descargando archivo PDF...', 'info');
+        }
+        
+        function actualizarGradosDashboard() {
+            const nivel = document.getElementById('dashboard-nivel').value;
+            const selectGrado = document.getElementById('dashboard-grado');
+            
+            // Limpiar opciones actuales
+            selectGrado.innerHTML = '<option value="">Todos los grados</option>';
+            
+            if (nivel === 'primario') {
+                // Primario tiene 6 grados (1° a 6°)
+                for (let i = 1; i <= 6; i++) {
+                    const option = document.createElement('option');
+                    option.value = i;
+                    option.textContent = `${i}° Grado`;
+                    selectGrado.appendChild(option);
+                }
+            } else if (nivel === 'secundario') {
+                // Secundario tiene 5 grados (1° a 5°)
+                for (let i = 1; i <= 5; i++) {
+                    const option = document.createElement('option');
+                    option.value = i;
+                    option.textContent = `${i}° Grado`;
+                    selectGrado.appendChild(option);
+                }
+            }
+        }
+        
+        function actualizarGradosFiltros() {
+            const nivel = document.getElementById('filtro-nivel').value;
+            const selectGrado = document.getElementById('filtro-grado');
+            
+            // Limpiar opciones actuales
+            selectGrado.innerHTML = '<option value="">Todos los grados</option>';
+            
+            if (nivel === 'primario') {
+                // Primario tiene 6 grados (1° a 6°)
+                for (let i = 1; i <= 6; i++) {
+                    const option = document.createElement('option');
+                    option.value = i;
+                    option.textContent = `${i}° Grado`;
+                    selectGrado.appendChild(option);
+                }
+            } else if (nivel === 'secundario') {
+                // Secundario tiene 5 grados (1° a 5°)
+                for (let i = 1; i <= 5; i++) {
+                    const option = document.createElement('option');
+                    option.value = i;
+                    option.textContent = `${i}° Grado`;
+                    selectGrado.appendChild(option);
+                }
+            }
+        }
+        
+        function mostrarTablaRecientes(inscripciones) {
+            const tbody = document.querySelector('#tabla-recientes tbody');
+            tbody.innerHTML = '';
+            
+            inscripciones.forEach(inscripcion => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><strong>${inscripcion.dni}</strong></td>
+                    <td>${inscripcion.apellidos}, ${inscripcion.nombres}</td>
+                    <td class="text-truncate" style="max-width: 200px;">${inscripcion.institucion_educativa}</td>
+                    <td><span class="badge bg-secondary">${inscripcion.nivel}</span></td>
+                    <td>${new Date(inscripcion.fecha_inscripcion).toLocaleDateString('es-ES')}</td>
+                    <td><span class="badge badge-${inscripcion.estado}">${inscripcion.estado}</span></td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+        
+        function cargarInscripciones(pagina = 1, busqueda = '', nivel = '', estado = '', grado = '') {
+            paginaActual = pagina;
+            let url = `/api/inscripciones?page=${pagina}&limit=10`;
+            if (busqueda) {
+                url += `&search=${encodeURIComponent(busqueda)}`;
+            }
+            if (nivel) {
+                url += `&nivel=${encodeURIComponent(nivel)}`;
+            }
+            if (estado) {
+                url += `&estado=${encodeURIComponent(estado)}`;
+            }
+            if (grado) {
+                url += `&grado=${encodeURIComponent(grado)}`;
+            }
+            
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        mostrarTablaInscripciones(data.data);
+                        mostrarPaginacion(data.pagination, 'pagination-inscripciones');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    mostrarMensaje('Error cargando inscripciones', 'danger');
+                });
+        }
+        
+        function mostrarTablaInscripciones(inscripciones) {
+            const tbody = document.querySelector('#tabla-inscripciones tbody');
+            tbody.innerHTML = '';
+            
+            inscripciones.forEach(inscripcion => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><span class="badge bg-light text-dark">${inscripcion.id}</span></td>
+                    <td><strong>${inscripcion.dni}</strong></td>
+                    <td>${inscripcion.apellidos}</td>
+                    <td>${inscripcion.nombres}</td>
+                    <td><small class="text-muted">${inscripcion.region}</small></td>
+                    <td class="text-truncate" style="max-width: 200px;" title="${inscripcion.institucion_educativa}">
+                        ${inscripcion.institucion_educativa.substring(0, 30)}...
+                    </td>
+                    <td><span class="badge bg-secondary">${inscripcion.nivel}</span></td>
+                    <td><span class="badge badge-${inscripcion.estado}">${inscripcion.estado}</span></td>
+                    <td><small>${new Date(inscripcion.fecha_inscripcion).toLocaleDateString('es-ES')}</small></td>
+                    <td>
+                        <div class="btn-group-vertical btn-group-sm" role="group">
+                            <button class="btn btn-outline-primary btn-sm" onclick="verVoucher('${inscripcion.voucher_filename || ''}', '${inscripcion.apellidos}, ${inscripcion.nombres}')" title="Ver PDF">
+                                <i class="bi bi-file-earmark-pdf"></i>
+                            </button>
+                            <button class="btn btn-success btn-sm" onclick="aprobarInscripcion(${inscripcion.id}, '${inscripcion.apellidos}, ${inscripcion.nombres}')" title="Aprobar">
+                                <i class="bi bi-check-circle"></i>
+                            </button>
+                            <button class="btn btn-warning btn-sm" onclick="editarInscripcion(${inscripcion.id})" title="Editar">
+                                <i class="bi bi-pencil"></i>
+                            </button>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+        
+        function buscarInscripciones() {
+            const busqueda = document.getElementById('search-input').value;
+            const nivel = document.getElementById('filtro-nivel').value;
+            const estado = document.getElementById('filtro-estado').value;
+            const grado = document.getElementById('filtro-grado').value;
+            cargarInscripciones(1, busqueda, nivel, estado, grado);
+        }
+        
+        function limpiarFiltros() {
+            document.getElementById('search-input').value = '';
+            document.getElementById('filtro-nivel').value = '';
+            document.getElementById('filtro-estado').value = '';
+            document.getElementById('filtro-grado').value = '';
+            cargarInscripciones(1);
+        }
+        
+        function editarInscripcion(id) {
+            fetch(`/api/inscripciones`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const inscripcion = data.data.find(i => i.id === id);
+                        if (inscripcion) {
+                            // Llenar el formulario de edición
+                            document.getElementById('edit-id').value = inscripcion.id;
+                            document.getElementById('edit-apellidos').value = inscripcion.apellidos;
+                            document.getElementById('edit-nombres').value = inscripcion.nombres;
+                            document.getElementById('edit-dni').value = inscripcion.dni;
+                            document.getElementById('edit-region').value = inscripcion.region;
+                            document.getElementById('edit-provincia').value = inscripcion.provincia;
+                            document.getElementById('edit-distrito').value = inscripcion.distrito;
+                            document.getElementById('edit-institucion').value = inscripcion.institucion_educativa;
+                            document.getElementById('edit-nivel').value = inscripcion.nivel;
+                            document.getElementById('edit-grado').value = inscripcion.grado;
+                            document.getElementById('edit-estado').value = inscripcion.estado;
+                            
+                            // Mostrar modal
+                            const modal = new bootstrap.Modal(document.getElementById('modal-editar'));
+                            modal.show();
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    mostrarMensaje('Error cargando datos para editar', 'danger');
+                });
+        }
+        
+        function verVoucher(filename, nombreEstudiante) {
+            if (!filename) {
+                mostrarMensaje('No hay voucher disponible para esta inscripción', 'info');
+                return;
+            }
+            
+            // Mostrar el PDF en el modal
+            document.getElementById('pdf-titulo').innerHTML = `<i class="bi bi-file-earmark-pdf me-2"></i>Voucher de ${nombreEstudiante}`;
+            document.getElementById('pdf-viewer').src = `/vouchers/${filename}`;
+            const modal = new bootstrap.Modal(document.getElementById('modal-pdf'));
+            modal.show();
+        }
+        
+        let inscripcionAAprobar = null;
+        
+        function aprobarInscripcion(id, nombre) {
+            inscripcionAAprobar = id;
+            document.getElementById('aprobar-nombre').textContent = nombre;
+            const modal = new bootstrap.Modal(document.getElementById('modal-aprobar'));
+            modal.show();
+        }
+        
+        function confirmarAprobacion() {
+            if (!inscripcionAAprobar) return;
+            
+            const datos = {
+                estado: 'aprobado'
+            };
+            
+            fetch(`/api/inscripcion/${inscripcionAAprobar}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(datos)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    mostrarMensaje('Inscripción aprobada exitosamente', 'success');
+                    cargarInscripciones(paginaActual);
+                    cerrarModal('modal-aprobar');
+                    cargarDashboard(); // Actualizar estadísticas
+                } else {
+                    mostrarMensaje(data.error, 'danger');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                mostrarMensaje('Error aprobando inscripción', 'danger');
+            });
+        }
+        
+        function mostrarPaginacion(pagination, containerId) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = '';
+            
+            totalPaginas = pagination.totalPages;
+            
+            // Botón anterior
+            if (pagination.page > 1) {
+                const li = document.createElement('li');
+                li.className = 'page-item';
+                li.innerHTML = `<a class="page-link" href="#" onclick="event.preventDefault(); irPagina(${pagination.page - 1})">
+                    <i class="bi bi-chevron-left"></i> Anterior
+                </a>`;
+                container.appendChild(li);
+            }
+            
+            // Números de página
+            const startPage = Math.max(1, pagination.page - 2);
+            const endPage = Math.min(pagination.totalPages, pagination.page + 2);
+            
+            if (startPage > 1) {
+                const li = document.createElement('li');
+                li.className = 'page-item';
+                li.innerHTML = `<a class="page-link" href="#" onclick="event.preventDefault(); irPagina(1)">1</a>`;
+                container.appendChild(li);
+                
+                if (startPage > 2) {
+                    const li = document.createElement('li');
+                    li.className = 'page-item disabled';
+                    li.innerHTML = `<span class="page-link">...</span>`;
+                    container.appendChild(li);
+                }
+            }
+            
+            for (let i = startPage; i <= endPage; i++) {
+                const li = document.createElement('li');
+                li.className = `page-item ${i === pagination.page ? 'active' : ''}`;
+                li.innerHTML = `<a class="page-link" href="#" onclick="event.preventDefault(); irPagina(${i})">${i}</a>`;
+                container.appendChild(li);
+            }
+            
+            if (endPage < pagination.totalPages) {
+                if (endPage < pagination.totalPages - 1) {
+                    const li = document.createElement('li');
+                    li.className = 'page-item disabled';
+                    li.innerHTML = `<span class="page-link">...</span>`;
+                    container.appendChild(li);
+                }
+                
+                const li = document.createElement('li');
+                li.className = 'page-item';
+                li.innerHTML = `<a class="page-link" href="#" onclick="event.preventDefault(); irPagina(${pagination.totalPages})">${pagination.totalPages}</a>`;
+                container.appendChild(li);
+            }
+            
+            // Botón siguiente
+            if (pagination.page < pagination.totalPages) {
+                const li = document.createElement('li');
+                li.className = 'page-item';
+                li.innerHTML = `<a class="page-link" href="#" onclick="event.preventDefault(); irPagina(${pagination.page + 1})">
+                    Siguiente <i class="bi bi-chevron-right"></i>
+                </a>`;
+                container.appendChild(li);
+            }
+        }
+        
+        function irPagina(pagina) {
+            const filtros = obtenerFiltrosActuales();
+            cargarInscripciones(pagina, filtros.busqueda, filtros.nivel, filtros.estado, filtros.grado);
+        }
+        
+        function cerrarModal(modalId) {
+            const modal = bootstrap.Modal.getInstance(document.getElementById(modalId));
+            if (modal) {
+                modal.hide();
+            }
+            
+            if (modalId === 'modal-aprobar') {
+                inscripcionAAprobar = null;
+            }
+            
+            if (modalId === 'modal-pdf') {
+                document.getElementById('pdf-viewer').src = '';
+            }
+        }
+        
+        function mostrarMensaje(mensaje, tipo) {
+            const toastBody = document.getElementById('toast-body');
+            const toast = document.getElementById('toast-message');
+            
+            // Configurar color según tipo
+            let bgClass = '';
+            let icon = '';
+            switch(tipo) {
+                case 'success':
+                    bgClass = 'bg-success';
+                    icon = 'bi-check-circle-fill';
+                    break;
+                case 'danger':
+                    bgClass = 'bg-danger';
+                    icon = 'bi-exclamation-triangle-fill';
+                    break;
+                case 'info':
+                    bgClass = 'bg-info';
+                    icon = 'bi-info-circle-fill';
+                    break;
+                default:
+                    bgClass = 'bg-primary';
+                    icon = 'bi-bell-fill';
+            }
+            
+            toast.className = `toast ${bgClass} text-white`;
+            toast.querySelector('.toast-header i').className = `${icon} text-white me-2`;
+            toastBody.textContent = mensaje;
+            
+            toastInstance.show();
+        }
+        
+        function obtenerFiltrosActuales() {
+            return {
+                busqueda: document.getElementById('search-input').value || '',
+                nivel: document.getElementById('filtro-nivel').value || '',
+                estado: document.getElementById('filtro-estado').value || '',
+                grado: document.getElementById('filtro-grado').value || ''
+            };
+        }
+        
+        // Manejar formulario de edición
+        document.getElementById('form-editar').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const id = document.getElementById('edit-id').value;
+            const datos = {
+                apellidos: document.getElementById('edit-apellidos').value,
+                nombres: document.getElementById('edit-nombres').value,
+                dni: document.getElementById('edit-dni').value,
+                region: document.getElementById('edit-region').value,
+                provincia: document.getElementById('edit-provincia').value,
+                distrito: document.getElementById('edit-distrito').value,
+                institucion_educativa: document.getElementById('edit-institucion').value,
+                codigo_modular: '0000000', // Valor por defecto
+                nivel: document.getElementById('edit-nivel').value,
+                grado: document.getElementById('edit-grado').value,
+                estado: document.getElementById('edit-estado').value
+            };
+            
+            fetch(`/api/inscripcion/${id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(datos)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    mostrarMensaje(data.message, 'success');
+                    cargarInscripciones(paginaActual);
+                    cerrarModal('modal-editar');
+                } else {
+                    mostrarMensaje(data.error, 'danger');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                mostrarMensaje('Error actualizando inscripción', 'danger');
+            });
+        });
+        
+        // Manejar Enter en campo de búsqueda
+        document.getElementById('search-input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                buscarInscripciones();
+            }
+        });
+        
+        // Auto-cerrar modales al hacer clic en backdrop
+        document.querySelectorAll('.modal').forEach(modal => {
+            modal.addEventListener('hidden.bs.modal', function() {
+                if (modal.id === 'modal-pdf') {
+                    document.getElementById('pdf-viewer').src = '';
+                }
+                if (modal.id === 'modal-aprobar') {
+                    inscripcionAAprobar = null;
+                }
+            });
+        });
+    </script>
+</body>
+</html>

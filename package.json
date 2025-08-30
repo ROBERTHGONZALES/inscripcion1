@@ -1,0 +1,33 @@
+{
+  "name": "holamundohtml",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "body-parser": "^2.2.0",
+    "cors": "^2.8.5",
+    "crypto": "^1.0.1",
+    "events": "^3.3.0",
+    "express": "^5.1.0",
+    "fs": "^0.0.1-security",
+    "http": "^0.0.1-security",
+    "https": "^1.0.0",
+    "multer": "^2.0.2",
+    "mysql2": "^3.14.3",
+    "path": "^0.12.7",
+    "pdfkit": "^0.17.1",
+    "querystring": "^0.2.1",
+    "stream": "^0.0.3",
+    "url": "^0.11.4",
+    "util": "^0.12.5",
+    "xlsx": "^0.18.5"
+  }
+}

@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Inscripción Educativa</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.5/font/bootstrap-icons.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            background: white;
+            padding: 30px 20px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(220, 53, 69, 0.1);
+            border-top: 4px solid #dc3545;
+        }
+        
+        .header h1 {
+            color: #dc3545;
+            font-size: 2.2em;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            color: #6c757d;
+            font-size: 1.1em;
+            margin-bottom: 0;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            border-top: 4px solid #dc3545;
+        }
+        
+        .form-container {
+            padding: 40px;
+        }
+        
+        .section-title {
+            color: #dc3545;
+            font-size: 1.3em;
+            font-weight: 600;
+            margin: 30px 0 20px 0;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f8f9fa;
+            position: relative;
+        }
+        
+        .section-title::before {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 50px;
+            height: 2px;
+            background: #dc3545;
+        }
+        
+        .section-title:first-of-type {
+            margin-top: 0;
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .social-links {
+                gap: 10px;
+            }
+            
+            .social-link {
+                width: 45px;
+                height: 45px;
+                font-size: 18px;
+            }
+            
+            .header h1 {
+                font-size: 1.8em;
+            }
+            
+            .form-container {
+                padding: 30px 20px;
+            }
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #495057;
+            font-size: 14px;
+        }
+        
+        .required {
+            color: #dc3545;
+        }
+        
+        input, select, textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: #fff;
+        }
+        
+        input:focus, select:focus, textarea:focus {
+            border-color: #dc3545;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.1);
+        }
+        
+        input:disabled, select:disabled {
+            background-color: #f8f9fa;
+            color: #6c757d;
+            cursor: not-allowed;
+        }
+        
+        .submit-btn {
+            background: linear-gradient(45deg, #dc3545, #c82333);
+            color: white;
+            padding: 15px 40px;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            width: 100%;
+            margin-top: 30px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
+        }
+        
+        .submit-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(220, 53, 69, 0.4);
+        }
+        
+        .submit-btn:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .status {
+            padding: 15px 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: 500;
+        }
+        
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .info {
+            background-color: #f8f9fa;
+            color: #495057;
+            border: 1px solid #dee2e6;
+        }
+        
+        #voucher-info {
+            font-size: 13px;
+            color: #6c757d;
+            margin-top: 8px;
+            font-style: italic;
+        }
+        
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #f3f3f3;
+            border-top: 2px solid #dc3545;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 10px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 30px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(220, 53, 69, 0.1);
+            border-top: 4px solid #dc3545;
+        }
+        
+        .footer h5 {
+            color: #dc3545;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+        
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .social-link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(45deg, #dc3545, #c82333);
+            color: white;
+            text-decoration: none;
+            border-radius: 50%;
+            font-size: 20px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
+        }
+        
+        .social-link:hover {
+            color: white;
+            transform: translateY(-3px) scale(1.1);
+            box-shadow: 0 6px 20px rgba(220, 53, 69, 0.5);
+        }
+        
+        .footer p {
+            color: #6c757d;
+            font-size: 14px;
+            margin-bottom: 0;
+        }
+        
+        .brand-accent {
+            background: linear-gradient(45deg, #dc3545, #c82333);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Sistema de Inscripción Educativa</h1>
+        <p>Completa tus datos para registrar tu inscripción</p>
+    </div>
+
+    <div class="container">
+        <div class="form-container">
+            <form id="inscripcionForm">
+                <h3 class="section-title">Datos Personales</h3>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="apellidos">Apellidos <span class="required">*</span></label>
+                        <input type="text" id="apellidos" name="apellidos" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="nombres">Nombres <span class="required">*</span></label>
+                        <input type="text" id="nombres" name="nombres" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="dni">DNI <span class="required">*</span></label>
+                    <input type="text" id="dni" name="dni" maxlength="8" pattern="[0-9]{8}" required>
+                </div>
+
+                <h3 class="section-title">Ubicación</h3>
+                <div class="form-group">
+                    <label for="region">Región/Departamento <span class="required">*</span></label>
+                    <select id="region" name="region" onchange="cargarProvincias()" required>
+                        <option value="">Seleccione una región</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="provincia">Provincia <span class="required">*</span></label>
+                    <select id="provincia" name="provincia" onchange="cargarDistritos()" disabled required>
+                        <option value="">Seleccione una provincia</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="distrito">Distrito <span class="required">*</span></label>
+                    <select id="distrito" name="distrito" onchange="cargarInstituciones()" disabled required>
+                        <option value="">Seleccione un distrito</option>
+                    </select>
+                </div>
+
+                <h3 class="section-title">Información Educativa</h3>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="nivel">Nivel Educativo <span class="required">*</span></label>
+                        <select id="nivel" name="nivel" onchange="actualizarGrados(); cargarInstituciones()" required>
+                            <option value="">Seleccione un nivel</option>
+                            <option value="primario">Primario</option>
+                            <option value="secundario">Secundario</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="grado">Grado <span class="required">*</span></label>
+                        <select id="grado" name="grado" disabled required>
+                            <option value="">Seleccione un grado</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="institucion">Institución Educativa <span class="required">*</span></label>
+                    <select id="institucion" name="institucion" disabled required>
+                        <option value="">Seleccione una institución</option>
+                    </select>
+                </div>
+
+                <h3 class="section-title">Comprobante de Pago</h3>
+                <div class="form-group">
+                    <label for="voucher">Voucher/Comprobante (PDF) <span class="required">*</span></label>
+                    <input type="file" id="voucher" name="voucher" accept=".pdf" required>
+                    <div id="voucher-info">Solo se permiten archivos PDF (máximo 5MB)</div>
+                </div>
+
+                <button type="submit" id="submitBtn" class="submit-btn">
+                    Registrar Inscripción
+                </button>
+            </form>
+
+            <div id="result-status" style="display: none;" class="status"></div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <h5>Síguenos en nuestras redes sociales</h5>
+        <div class="social-links">
+            <a href="https://www.youtube.com/@mathfredtingenierias4620" target="_blank" class="social-link" title="YouTube">
+                <i class="bi bi-youtube"></i>
+            </a>
+            <a href="https://www.tiktok.com/@math_fredt_ingenierias" target="_blank" class="social-link" title="TikTok">
+                <i class="bi bi-tiktok"></i>
+            </a>
+            <a href="https://api.whatsapp.com/send?phone=51951152310&text=Hola%20Math%20Fredt!%20quisiera%20m%C3%A1s%20informaci%C3%B3n%F0%9F%98%83." target="_blank" class="social-link" title="WhatsApp">
+                <i class="bi bi-whatsapp"></i>
+            </a>
+            <a href="https://www.facebook.com/MathFredt123?mibextid=JRoKGi" target="_blank" class="social-link" title="Facebook">
+                <i class="bi bi-facebook"></i>
+            </a>
+        </div>
+        <p>© 2025 Sistema de Inscripción Educativa - <span class="brand-accent">Math Fredt</span></p>
+        <p><strong>Contacto:</strong> +51 xxxxxxxxx | <strong>Email:</strong> xxxxxxx@gmail.com</p>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // Variables globales
+        let instituciones = [];
+
+        // Inicializar aplicación
+        window.onload = function() {
+            cargarRegiones();
+            configurarFormulario();
+        }
+
+        function cargarRegiones() {
+            fetch('/api/departamentos')
+                .then(response => response.json())
+                .then(data => {
+                    const select = document.getElementById('region');
+                    select.innerHTML = '<option value="">Seleccione una región</option>';
+                    
+                    data.forEach(dept => {
+                        const option = document.createElement('option');
+                        option.value = dept.D_DPTO;
+                        option.textContent = dept.D_DPTO;
+                        select.appendChild(option);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    mostrarError('Error al cargar regiones');
+                });
+        }
+
+        function cargarProvincias() {
+            const region = document.getElementById('region').value;
+            const provinciaSelect = document.getElementById('provincia');
+            const distritoSelect = document.getElementById('distrito');
+            const institucionSelect = document.getElementById('institucion');
+            
+            // Resetear selects dependientes
+            provinciaSelect.innerHTML = '<option value="">Seleccione una provincia</option>';
+            distritoSelect.innerHTML = '<option value="">Seleccione un distrito</option>';
+            institucionSelect.innerHTML = '<option value="">Seleccione una institución</option>';
+            
+            provinciaSelect.disabled = true;
+            distritoSelect.disabled = true;
+            institucionSelect.disabled = true;
+            
+            if (region === '') return;
+            
+            fetch(`/api/provincias?departamento=${encodeURIComponent(region)}`)
+                .then(response => response.json())
+                .then(data => {
+                    data.forEach(prov => {
+                        const option = document.createElement('option');
+                        option.value = prov.D_PROV;
+                        option.textContent = prov.D_PROV;
+                        provinciaSelect.appendChild(option);
+                    });
+                    provinciaSelect.disabled = false;
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    mostrarError('Error al cargar provincias');
+                });
+        }
+
+        function cargarDistritos() {
+            const region = document.getElementById('region').value;
+            const provincia = document.getElementById('provincia').value;
+            const distritoSelect = document.getElementById('distrito');
+            const institucionSelect = document.getElementById('institucion');
+            
+            // Resetear selects dependientes
+            distritoSelect.innerHTML = '<option value="">Seleccione un distrito</option>';
+            institucionSelect.innerHTML = '<option value="">Seleccione una institución</option>';
+            
+            distritoSelect.disabled = true;
+            institucionSelect.disabled = true;
+            
+            if (provincia === '') return;
+            
+            fetch(`/api/distritos?departamento=${encodeURIComponent(region)}&provincia=${encodeURIComponent(provincia)}`)
+                .then(response => response.json())
+                .then(data => {
+                    data.forEach(dist => {
+                        const option = document.createElement('option');
+                        option.value = dist.D_DIST;
+                        option.textContent = dist.D_DIST;
+                        distritoSelect.appendChild(option);
+                    });
+                    distritoSelect.disabled = false;
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    mostrarError('Error al cargar distritos');
+                });
+        }
+
+        function cargarInstituciones() {
+            const region = document.getElementById('region').value;
+            const provincia = document.getElementById('provincia').value;
+            const distrito = document.getElementById('distrito').value;
+            const nivel = document.getElementById('nivel').value;
+            const institucionSelect = document.getElementById('institucion');
+            
+            institucionSelect.innerHTML = '<option value="">Seleccione una institución</option>';
+            institucionSelect.disabled = true;
+            
+            if (!region || !provincia || !distrito || !nivel) return;
+            
+            let url = `/api/colegios?departamento=${encodeURIComponent(region)}&provincia=${encodeURIComponent(provincia)}&distrito=${encodeURIComponent(distrito)}&nivel=${encodeURIComponent(nivel)}`;
+            
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    instituciones = data;
+                    data.forEach(inst => {
+                        const option = document.createElement('option');
+                        option.value = inst.COD_MOD;
+                        option.textContent = `${inst.CEN_EDU} - ${inst.D_NIV_MOD}`;
+                        institucionSelect.appendChild(option);
+                    });
+                    institucionSelect.disabled = false;
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    mostrarError('Error al cargar instituciones');
+                });
+        }
+
+        function actualizarGrados() {
+            const nivel = document.getElementById('nivel').value;
+            const gradoSelect = document.getElementById('grado');
+            
+            gradoSelect.innerHTML = '<option value="">Seleccione un grado</option>';
+            gradoSelect.disabled = true;
+            
+            if (nivel === 'primario') {
+                for (let i = 1; i <= 6; i++) {
+                    const option = document.createElement('option');
+                    option.value = i + '° Primaria';
+                    option.textContent = i + '° Grado de Primaria';
+                    gradoSelect.appendChild(option);
+                }
+                gradoSelect.disabled = false;
+            } else if (nivel === 'secundario') {
+                for (let i = 1; i <= 5; i++) {
+                    const option = document.createElement('option');
+                    option.value = i + '° Secundaria';
+                    option.textContent = i + '° Año de Secundaria';
+                    gradoSelect.appendChild(option);
+                }
+                gradoSelect.disabled = false;
+            }
+        }
+
+        function configurarFormulario() {
+            const form = document.getElementById('inscripcionForm');
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                enviarInscripcion();
+            });
+
+            // Validar DNI en tiempo real
+            document.getElementById('dni').addEventListener('input', function(e) {
+                e.target.value = e.target.value.replace(/[^0-9]/g, '');
+            });
+        }
+
+        function enviarInscripcion() {
+            const form = document.getElementById('inscripcionForm');
+            const formData = new FormData(form);
+            
+            // Buscar nombre de institución para agregarlo a FormData
+            const codigoModular = formData.get('institucion');
+            const institucionSeleccionada = instituciones.find(inst => inst.COD_MOD === codigoModular);
+            if (institucionSeleccionada) {
+                formData.append('institucion_educativa', institucionSeleccionada.CEN_EDU);
+            }
+            
+            // Renombrar campo institucion a codigo_modular para el backend
+            formData.append('codigo_modular', codigoModular);
+            formData.delete('institucion');
+
+            // Deshabilitar botón
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<div class="loading"></div>Registrando...';
+
+            // Enviar inscripción con FormData (incluye archivo)
+            fetch('/api/inscripcion', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                const resultDiv = document.getElementById('result-status');
+                resultDiv.style.display = 'block';
+                
+                if (data.success) {
+                    resultDiv.className = 'status success';
+                    resultDiv.textContent = '✓ ' + data.message;
+                    document.getElementById('inscripcionForm').reset();
+                    // Resetear selects
+                    document.getElementById('provincia').disabled = true;
+                    document.getElementById('distrito').disabled = true;
+                    document.getElementById('institucion').disabled = true;
+                    document.getElementById('grado').disabled = true;
+                } else {
+                    resultDiv.className = 'status error';
+                    resultDiv.textContent = '✗ ' + data.error;
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                const resultDiv = document.getElementById('result-status');
+                resultDiv.style.display = 'block';
+                resultDiv.className = 'status error';
+                resultDiv.textContent = '✗ Error al enviar inscripción';
+            })
+            .finally(() => {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = 'Registrar Inscripción';
+            });
+        }
+
+        function mostrarError(mensaje) {
+            const resultDiv = document.getElementById('result-status');
+            resultDiv.style.display = 'block';
+            resultDiv.className = 'status error';
+            resultDiv.textContent = mensaje;
+        }
+    </script>
+</body>
+</html>
