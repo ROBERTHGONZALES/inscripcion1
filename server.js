@@ -65,7 +65,9 @@ async function getConnection() {
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
-
+app.get('/admin', (req, res) => {
+  res.sendFile(path.join(__dirname, 'admin.html'));
+});
 // API para obtener departamentos
 app.get('/api/departamentos', async (req, res) => {
   try {
